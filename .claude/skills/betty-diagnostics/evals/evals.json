@@ -1,0 +1,23 @@
+{
+  "skill_name": "betty-diagnostics",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Betty is having an issue - this morning she's cranking fine but won't fire up. She started fine yesterday, no warning lights that I noticed. It's been pretty humid the last few days.",
+      "expected_output": "A new case file is created with a clear symptom description, and a ranked list of hypotheses grounded in known cranks-but-won't-start causes for this vehicle (e.g. fuel pump, ignition amp, coil connector corrosion, weak battery/grounds), each paired with a concrete, doable test. Tests are ordered cheapest/easiest first.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Betty is having an issue, the rear driver's side has been sinking overnight the last week or so — by morning that corner's noticeably lower than the other three, and the compressor doesn't seem to be running to correct it. She's got about 140k miles.",
+      "expected_output": "A new case file focused on the air suspension (EAS) system, with hypotheses drawn from known EAS overnight-sag causes (air spring leak, height sensor fault, weak battery/charging system, compressor/ECU wiring), ranked sensibly, each with a concrete test. Given the age/mileage, air spring leak and battery/charging should be treated as strong candidates.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Update on the cold stalling thing — I checked the coolant temp sensor resistance, it was within spec so that's probably not it. I did notice the IAC connector had some corrosion when I pulled it, cleaned it up and reconnected, but it still stalled once this morning before it warmed up, though less often than before. Should I keep going or try something else?",
+      "expected_output": "The existing case file (provided as input) is updated in place with a new dated round, not overwritten or replaced with a new file. The coolant temp sensor hypothesis is marked ruled out. The IAC hypothesis is acknowledged as partially addressed (cleaned corrosion, improvement but not resolution) rather than marked fully ruled out, since the fault persisted. A next hypothesis/test is proposed (e.g. re-test IAC more thoroughly, move to vacuum leak hypothesis, or consider that partial improvement points to a marginal but not fully failed IAC).",
+      "files": ["evals/files/existing-case-cold-stall.md"]
+    }
+  ]
+}
