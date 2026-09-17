@@ -1,0 +1,5 @@
+# Private facts about Betty (full VIN). The repo is public.
+.env
+
+# Claude Code agent worktrees
+.claude/worktrees/

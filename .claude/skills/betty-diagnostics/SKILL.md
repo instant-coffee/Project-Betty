@@ -11,10 +11,12 @@ Betty is a 1993 Range Rover Classic 4.2 LWB. She's 30+ years old, and problems o
 
 All of Betty's records live in the Project Betty repo (the WorkBook). Paths below are relative to the repo root; they are provisional until the WorkBook's folder structure is decided:
 
-- `vehicle-profile.md` — static facts about Betty herself (VIN, transmission type, suspension type, known mods or deviations from stock, service history highlights). Read this first, every time. If it doesn't exist yet, this is the very first case — create it with whatever the user tells you, note anything unknown as "unknown — verify from VIN plate / RAVE manual," and don't block the diagnosis waiting on it.
+- `vehicle-profile.md` — static facts about Betty herself (the non-serial part of the VIN, transmission type, suspension type, known mods or deviations from stock, service history highlights). Read this first, every time. If it doesn't exist yet, this is the very first case — create it with whatever the user tells you, note anything unknown as "unknown — verify from VIN plate / RAVE manual," and don't block the diagnosis waiting on it.
 - `cases/<slug>.md` — one evolving file per distinct issue, named for the symptom (e.g. `cases/2026-08-cold-start-stall.md`). A 30-year-old Land Rover often has more than one thing wrong at once — don't merge unrelated symptoms into one file, and don't let a new report silently reopen an old resolved case unless the symptom genuinely matches.
 
 If `cases/` doesn't exist yet, create it.
+
+The repo is public. The full VIN and anything else private goes in the git-ignored `.env`, never in a committed record.
 
 ## Step 1: Work out which case this is
 
