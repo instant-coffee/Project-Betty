@@ -1,0 +1,643 @@
+<title>Betty Showcase Prototype</title>
+<!--
+  PROTOTYPE, throwaway. Answers "What does the showcase look like?" (instant-coffee/Project-Betty#10).
+  Four structurally different landing views, switchable via ?variant=A|B|C|D, the bottom bar, or ← →.
+  Content is drawn from real records (vehicle-profile.md, the no-start Case). Photos are placeholders.
+  Folder names and the Area list are provisional: other tickets decide them.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  /* prototype chrome */
+  --pg:#eceee9; --pg-ink:#1c211e; --pg-muted:#5b635d; --pg-line:#cfd4cd; --pg-card:#f8f9f6;
+  --bar:#161a17; --bar-ink:#f3f5f1; --bar-dim:#9aa39c;
+  /* github surface */
+  --gh-bg:#ffffff; --gh-canvas:#f6f8fa; --gh-ink:#1f2328; --gh-muted:#59636e; --gh-line:#d1d9e0;
+  --gh-link:#0969da; --gh-label-bg:#ddf4ff; --gh-label-ink:#0550ae; --gh-code:#eff1f3;
+  --gh-done:#1a7f37; --gh-doing:#9a6700; --gh-plan:#8250df;
+  /* pages site (variant C) */
+  --s-bg:#f1f2ee; --s-ink:#1b1f1c; --s-muted:#5d655f; --s-line:#d3d8d0; --s-card:#fbfbf9;
+  --s-accent:#3d6b4f; --s-accent-ink:#ffffff; --s-chip:#e2e7e0;
+  /* photo placeholder */
+  --ph-a:#c9cfc7; --ph-b:#bec5bc; --ph-ink:#3f4741;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --pg:#121513; --pg-ink:#e3e7e2; --pg-muted:#98a19a; --pg-line:#2c322e; --pg-card:#191d1a;
+    --bar:#e9ece7; --bar-ink:#141715; --bar-dim:#5b635d;
+    --gh-bg:#0d1117; --gh-canvas:#151b23; --gh-ink:#f0f6fc; --gh-muted:#9198a1; --gh-line:#3d444d;
+    --gh-link:#4493f8; --gh-label-bg:#0f2a4a; --gh-label-ink:#8cc2ff; --gh-code:#212830;
+    --gh-done:#3fb950; --gh-doing:#d29922; --gh-plan:#ab7df8;
+    --s-bg:#141816; --s-ink:#e5e9e3; --s-muted:#9aa39c; --s-line:#2d3530; --s-card:#1a1f1c;
+    --s-accent:#83b797; --s-accent-ink:#0f1411; --s-chip:#242b27;
+    --ph-a:#2a312c; --ph-b:#252b27; --ph-ink:#a9b2ab;
+  }
+}
+:root[data-theme="dark"]{
+  --pg:#121513; --pg-ink:#e3e7e2; --pg-muted:#98a19a; --pg-line:#2c322e; --pg-card:#191d1a;
+  --bar:#e9ece7; --bar-ink:#141715; --bar-dim:#5b635d;
+  --gh-bg:#0d1117; --gh-canvas:#151b23; --gh-ink:#f0f6fc; --gh-muted:#9198a1; --gh-line:#3d444d;
+  --gh-link:#4493f8; --gh-label-bg:#0f2a4a; --gh-label-ink:#8cc2ff; --gh-code:#212830;
+  --gh-done:#3fb950; --gh-doing:#d29922; --gh-plan:#ab7df8;
+  --s-bg:#141816; --s-ink:#e5e9e3; --s-muted:#9aa39c; --s-line:#2d3530; --s-card:#1a1f1c;
+  --s-accent:#83b797; --s-accent-ink:#0f1411; --s-chip:#242b27;
+  --ph-a:#2a312c; --ph-b:#252b27; --ph-ink:#a9b2ab;
+}
+
+*{box-sizing:border-box}
+body{background:var(--pg);color:var(--pg-ink);font:15px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding-inline:16px;padding-block:0 96px}
+.wrap{max-width:1180px;margin:0 auto}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--gh-link);outline-offset:2px}
+
+/* ---------- prototype chrome ---------- */
+.proto-head{padding-block:22px 14px;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--pg-line)}
+.proto-head h1{margin:0;font-size:19px;font-weight:600;text-wrap:balance}
+.eyebrow{font:500 11px/1 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--pg-muted)}
+.proto-head p{margin:4px 0 0;color:var(--pg-muted);font-size:13.5px;max-width:70ch}
+
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;padding-block:18px 0;align-items:start}
+@media (max-width:980px){.layout{grid-template-columns:minmax(0,1fr)}.notes{order:-1}}
+
+.notes{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);background:var(--pg-card);border:1px solid var(--pg-line);border-radius:8px;padding:16px}
+@media (max-width:980px){.notes{position:static}}
+.notes h2{margin:2px 0 12px;font-size:16px;font-weight:600}
+.notes dl{margin:0;display:grid;gap:10px}
+.notes dt{font:500 10.5px/1.2 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.07em;text-transform:uppercase;color:var(--pg-muted)}
+.notes dd{margin:3px 0 0;font-size:13.5px;line-height:1.45}
+.notes .ask{margin-top:14px;padding-top:12px;border-top:1px dashed var(--pg-line);font-size:13px;color:var(--pg-muted)}
+
+.frame-label{font:500 11.5px/1 "IBM Plex Mono",ui-monospace,monospace;color:var(--pg-muted);margin:0 0 8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.frame-label + .frame-label{margin-top:0}
+.frame{border:1px solid var(--pg-line);border-radius:10px;overflow:hidden;box-shadow:0 1px 0 rgba(0,0,0,.03),0 8px 24px -16px rgba(0,0,0,.25)}
+.stack{display:grid;gap:22px}
+.urlbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--pg-card);border-bottom:1px solid var(--pg-line);font:12.5px/1 "IBM Plex Mono",ui-monospace,monospace;color:var(--pg-muted);min-width:0}
+.urlbar .dots{display:flex;gap:5px;flex:none}
+.urlbar .dots i{width:9px;height:9px;border-radius:50%;background:var(--pg-line);display:block}
+.urlbar span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---------- switcher ---------- */
+.switcher{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:50;display:flex;align-items:center;gap:4px;background:var(--bar);color:var(--bar-ink);border-radius:999px;padding:5px;box-shadow:0 10px 30px -8px rgba(0,0,0,.45);max-width:calc(100vw - 32px)}
+.switcher button{all:unset;cursor:pointer;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:18px;flex:none}
+.switcher button:hover{background:color-mix(in srgb,var(--bar-ink) 14%,transparent)}
+.switcher button:focus-visible{outline:2px solid var(--bar-ink)}
+.switcher .lbl{padding:0 10px;font:500 13px/1.2 "IBM Plex Mono",ui-monospace,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.switcher .lbl b{font-weight:600}
+.switcher .lbl small{color:var(--bar-dim);font-size:11px;margin-left:6px}
+
+/* ---------- photo placeholder ---------- */
+.ph{position:relative;background:repeating-linear-gradient(135deg,var(--ph-a) 0 10px,var(--ph-b) 10px 20px);color:var(--ph-ink);display:grid;place-items:center;text-align:center;font:500 11.5px/1.35 "IBM Plex Mono",ui-monospace,monospace;padding:10px;max-width:100%;border-radius:6px}
+.ph.hero{aspect-ratio:16/7;width:100%}
+.ph.tall{aspect-ratio:4/3;width:100%}
+.ph.thumb{width:72px;height:54px;font-size:9px;padding:4px;border-radius:4px;flex:none}
+
+/* ---------- GitHub surface ---------- */
+.gh{background:var(--gh-bg);color:var(--gh-ink);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif}
+.gh a{color:var(--gh-link);text-decoration:none}
+.gh a:hover{text-decoration:underline}
+.gh-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--gh-line);background:var(--gh-canvas)}
+.gh-top .repo{font-size:18px}
+.gh-top .repo b{font-weight:600}
+.gh-pill{border:1px solid var(--gh-line);border-radius:999px;padding:0 8px;font-size:12px;color:var(--gh-muted);line-height:20px}
+.gh-body{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:24px;padding:20px}
+@media (max-width:760px){.gh-body{grid-template-columns:minmax(0,1fr);padding:14px}.gh-about{order:-1}}
+.gh-about h3{font-size:15px;margin:0 0 8px}
+.gh-about p{margin:0 0 10px;font-size:14px}
+.gh-topics{display:flex;flex-wrap:wrap;gap:5px}
+.gh-topics span{background:var(--gh-label-bg);color:var(--gh-label-ink);border-radius:999px;padding:0 9px;font-size:12px;font-weight:500;line-height:22px}
+.gh-files{border:1px solid var(--gh-line);border-radius:6px;overflow:hidden;margin-bottom:16px}
+.gh-files .commit{background:var(--gh-canvas);padding:9px 14px;font-size:13px;color:var(--gh-muted);border-bottom:1px solid var(--gh-line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gh-files .row{display:flex;gap:10px;padding:7px 14px;border-top:1px solid var(--gh-line);font-size:14px}
+.gh-files .commit + .row{border-top:0}
+.gh-files .row .ico{width:16px;color:var(--gh-muted);flex:none;text-align:center}
+.gh-readme{border:1px solid var(--gh-line);border-radius:6px}
+.gh-readme .tab{padding:9px 14px;border-bottom:1px solid var(--gh-line);font-size:14px;font-weight:600;display:flex;gap:6px;align-items:center}
+.md{padding:22px 28px 26px;overflow-wrap:anywhere}
+@media (max-width:760px){.md{padding:16px}}
+.md h1{font-size:2em;font-weight:600;margin:0 0 14px;padding-bottom:.3em;border-bottom:1px solid var(--gh-line);line-height:1.25}
+.md h2{font-size:1.5em;font-weight:600;margin:24px 0 14px;padding-bottom:.3em;border-bottom:1px solid var(--gh-line);line-height:1.25}
+.md h3{font-size:1.25em;font-weight:600;margin:22px 0 12px;line-height:1.25}
+.md p,.md ul,.md ol,.md table,.md blockquote{margin:0 0 14px}
+.md ul,.md ol{padding-left:2em}
+.md li + li{margin-top:4px}
+.md code{background:var(--gh-code);border-radius:6px;padding:.15em .4em;font:85% ui-monospace,SFMono-Regular,Menlo,monospace}
+.md blockquote{padding:0 1em;color:var(--gh-muted);border-left:.25em solid var(--gh-line)}
+.md hr{border:0;height:.25em;background:var(--gh-line);margin:22px 0}
+.md .tblwrap{overflow-x:auto;margin:0 0 14px}
+.md table{border-collapse:collapse;margin:0;font-size:14px}
+.md th,.md td{border:1px solid var(--gh-line);padding:6px 13px;text-align:left;vertical-align:top}
+.md th{font-weight:600}
+.md tr:nth-child(2n) td{background:var(--gh-canvas)}
+.md sub{color:var(--gh-muted)}
+.md .muted{color:var(--gh-muted)}
+.md .ph{margin:0 0 14px}
+.status{font-weight:600;white-space:nowrap}
+.status.done{color:var(--gh-done)} .status.doing{color:var(--gh-doing)} .status.plan{color:var(--gh-plan)} .status.none{color:var(--gh-muted);font-weight:400}
+
+/* ---------- Variant C: Pages site ---------- */
+.site{background:var(--s-bg);color:var(--s-ink);font:15.5px/1.6 "Barlow",system-ui,sans-serif}
+.site a{color:inherit}
+.s-nav{display:flex;flex-wrap:wrap;gap:6px 20px;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--s-line)}
+.s-word{font:700 22px/1 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.14em;text-transform:uppercase}
+.s-nav ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 18px;font:500 14px/1.4 "Barlow",sans-serif}
+.s-nav ul a{text-decoration:none;color:var(--s-muted)}
+.s-nav ul a:hover{color:var(--s-ink)}
+.s-hero{position:relative;padding:0}
+.s-hero .ph{border-radius:0;aspect-ratio:21/9;min-height:220px}
+.s-hero-text{position:absolute;left:0;right:0;bottom:0;padding:22px 24px;background:linear-gradient(to top,rgba(10,14,11,.78),rgba(10,14,11,0));color:#f4f6f2}
+.s-hero-text .kick{font:500 12px/1.2 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.06em;opacity:.85}
+.s-hero-text h2{margin:6px 0 0;font:600 clamp(30px,5vw,52px)/0.95 "Barlow Condensed","Arial Narrow",sans-serif;text-transform:uppercase;letter-spacing:.01em;text-wrap:balance}
+.s-status{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--s-line)}
+.s-status div{flex:1 1 150px;padding:12px 24px;border-right:1px solid var(--s-line)}
+.s-status div:last-child{border-right:0}
+.s-status dt{font:500 10.5px/1.2 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--s-muted)}
+.s-status dd{margin:3px 0 0;font:600 19px/1.2 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.02em}
+.s-main{padding:22px 24px 30px;display:grid;gap:26px}
+.s-rail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.s-rail a{text-decoration:none;display:block;padding:10px 12px 9px;border-top:4px solid var(--s-line);font:600 16px/1.1 "Barlow Condensed","Arial Narrow",sans-serif;text-transform:uppercase;letter-spacing:.05em}
+.s-rail a small{display:block;margin-top:3px;font:400 12.5px/1.3 "Barlow",sans-serif;text-transform:none;letter-spacing:0;color:var(--s-muted)}
+.s-rail a.on{border-top-color:var(--s-accent)}
+.s-filter{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.s-filter .lab{font:500 11px/1 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.07em;text-transform:uppercase;color:var(--s-muted);margin-right:4px}
+.s-filter button{all:unset;cursor:pointer;background:var(--s-chip);border-radius:999px;padding:4px 12px;font:500 13.5px/1.3 "Barlow",sans-serif}
+.s-filter button[aria-pressed="true"]{background:var(--s-accent);color:var(--s-accent-ink)}
+.s-filter button:focus-visible{outline:2px solid var(--s-accent);outline-offset:2px}
+.s-band{display:grid;gap:12px}
+.s-band-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;padding-bottom:6px;border-bottom:2px solid var(--s-ink)}
+.s-band-head h3{margin:0;font:600 26px/1 "Barlow Condensed","Arial Narrow",sans-serif;text-transform:uppercase;letter-spacing:.03em}
+.s-band-head span{font:400 13px/1.3 "IBM Plex Mono",ui-monospace,monospace;color:var(--s-muted)}
+.s-band.quiet .s-band-head{border-bottom-color:var(--s-line)}
+.s-band.quiet .s-band-head h3{color:var(--s-muted)}
+.s-entries{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.s-entry{background:var(--s-card);border:1px solid var(--s-line);border-radius:6px;overflow:hidden;display:flex;flex-direction:column}
+.s-entry .ph{border-radius:0;aspect-ratio:4/3}
+.s-entry .body{padding:10px 12px 12px;display:grid;gap:4px}
+.s-entry .meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font:400 12px/1.2 "IBM Plex Mono",ui-monospace,monospace;color:var(--s-muted)}
+.s-entry .meta b{font-weight:500;background:var(--s-chip);color:var(--s-ink);border-radius:3px;padding:2px 6px}
+.s-entry h4{margin:0;font:600 18px/1.15 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.01em}
+.s-entry p{margin:0;font-size:14px;color:var(--s-muted);line-height:1.45}
+.s-entry.case{border-color:var(--s-accent)}
+.s-entry.case .tag{font:600 11px/1 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--s-accent)}
+.s-empty{font-size:14.5px;color:var(--s-muted);margin:0}
+.s-foot{border-top:1px solid var(--s-line);padding:14px 24px;font-size:13px;color:var(--s-muted)}
+
+/* ---------- Variant D board ---------- */
+.board td:first-child{font-weight:600;white-space:nowrap}
+.board td{min-width:150px}
+.board td:first-child{min-width:0}
+</style>
+
+<div class="wrap">
+  <header class="proto-head">
+    <div>
+      <div class="eyebrow">Prototype · throwaway · sample content</div>
+      <h1>What does the showcase look like?</h1>
+      <p>Four landing views for friends and enthusiasts. Text comes from Betty's real records; photos are placeholders; folder names and Areas are provisional until their own tickets settle them.</p>
+    </div>
+  </header>
+
+  <div class="layout">
+    <main id="variants">
+
+      <!-- ===================== A: README dashboard ===================== -->
+      <section data-variant="A" hidden>
+        <p class="frame-label">github.com/instant-coffee/Project-Betty · the repo home, README.md at the root</p>
+        <div class="frame gh">
+          <div data-gh-top></div>
+          <div class="gh-body">
+            <div>
+              <div data-gh-files></div>
+              <div class="gh-readme">
+                <div class="tab">README</div>
+                <article class="md">
+                  <h1>Betty</h1>
+                  <p><strong>1993 Range Rover Classic LWB 4.2</strong> · NAS · automatic · about 200,000 km</p>
+                  <div class="ph hero">photo: Betty in the gravel lot, three-quarter front</div>
+                  <p>Daily driver until summer 2025, then parked for the jobs you can't do on your only car, head gaskets included. Now coming back: ran when parked → <strong>Recommission</strong> → Refresh → Build-out.</p>
+
+                  <h2>Where she's at</h2>
+                  <div class="tblwrap"><table>
+                    <thead><tr><th>Phase</th><th>Status</th><th>What it means</th></tr></thead>
+                    <tbody>
+                      <tr><td><strong>Recommission</strong></td><td><span class="status doing">In progress</span></td><td>Running and driving safely</td></tr>
+                      <tr><td>Refresh</td><td><span class="status none">Not started</span></td><td>Cleanup, rust, seals</td></tr>
+                      <tr><td>Build-out</td><td><span class="status none">Not started</span></td><td>Van-life / adventure rig</td></tr>
+                    </tbody>
+                  </table></div>
+                  <p><strong>Running:</strong> no · <strong>Open Cases:</strong> 1 · <strong>Last Build Log entry:</strong> 2026-09-16</p>
+
+                  <h2>Latest from the Build Log</h2>
+                  <div class="tblwrap"><table>
+                    <thead><tr><th></th><th>Date</th><th>Entry</th><th>Phase · Area</th></tr></thead>
+                    <tbody>
+                      <tr><td><div class="ph thumb">photo</div></td><td>2026-09-16</td><td><a href="#">Opened the no-start Case</a></td><td>Recommission · electrical</td></tr>
+                      <tr><td><div class="ph thumb">contact block</div></td><td>2026-09</td><td><a href="#">Ignition contact block out: old grease, shorts to its housing at II and III</a></td><td>Recommission · electrical</td></tr>
+                      <tr><td><div class="ph thumb">crimp</div></td><td>2026-09</td><td><a href="#">Battery positive lead corroded through at the crimp</a></td><td>Recommission · electrical</td></tr>
+                      <tr><td><div class="ph thumb">photo</div></td><td>2026-09</td><td><a href="#">Flat battery recharged, fresh petrol in</a></td><td>Recommission · fuel</td></tr>
+                    </tbody>
+                  </table></div>
+                  <p><a href="#">All Build Log entries →</a></p>
+
+                  <h2>Open Cases</h2>
+                  <ul>
+                    <li><a href="#"><strong>No start: key does nothing</strong></a>. The Lucas ignition contact block shorts to its grounded housing at II and III. Next: bench-test each white terminal, then order a replacement block.</li>
+                  </ul>
+
+                  <h2>Up next</h2>
+                  <ul>
+                    <li><a href="#">Replace the Lucas ignition contact block</a> <sub>Plan · Recommission</sub></li>
+                    <li><a href="#">Remake the battery positive lead</a> <sub>Plan · Recommission</sub></li>
+                    <li><a href="#">Turn the engine by hand before the first crank</a> <sub>Plan · Recommission</sub></li>
+                    <li><a href="#">Head gaskets</a> <sub>Plan · Recommission</sub></li>
+                  </ul>
+
+                  <h2>Browse the WorkBook</h2>
+                  <p><a href="#">Build Log</a> · <a href="#">Cases</a> · <a href="#">Walkthroughs</a> · <a href="#">References</a> · <a href="#">Inspiration</a> · <a href="#">Vehicle Profile</a></p>
+                </article>
+              </div>
+            </div>
+            <aside class="gh-about" data-gh-about></aside>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== B: README as a book ===================== -->
+      <section data-variant="B" hidden>
+        <div class="stack">
+          <div>
+            <p class="frame-label">github.com/instant-coffee/Project-Betty · README.md tells the story in three Parts</p>
+            <div class="frame gh">
+              <div data-gh-top></div>
+              <div class="gh-body">
+                <div>
+                  <div data-gh-files></div>
+                  <div class="gh-readme">
+                    <div class="tab">README</div>
+                    <article class="md">
+                      <h1>Betty</h1>
+                      <div class="ph hero">photo: Betty the day she was parked, summer 2025</div>
+                      <p>Betty is a 1993 Range Rover Classic LWB with the 4.2 V8. She was the daily driver until summer 2025, when she was parked to do the jobs you can't do on your only car, head gaskets included. Standing did what standing does.</p>
+                      <p>This is the story of bringing her back, in three Parts.</p>
+
+                      <h2>Part 1: Recommission</h2>
+                      <p><span class="status doing">In progress</span> · <span class="muted">Sept 2026 to now · 4 entries</span></p>
+                      <div class="ph tall" style="max-width:420px">photo: ignition contact block opened on the bench</div>
+                      <p>Getting her running and driving safely. First job: the key does nothing. So far the trail runs through a flat battery, a battery lead corroded through at the crimp, and an ignition contact block that shorts to its own housing.</p>
+                      <p><strong><a href="#">Read Part 1 →</a></strong></p>
+
+                      <h2>Part 2: Refresh</h2>
+                      <p><span class="status none">Not started</span></p>
+                      <p>Cleanup, rust and seals, once she drives.</p>
+
+                      <h2>Part 3: Build-out</h2>
+                      <p><span class="status none">Not started</span></p>
+                      <p>The van-life / adventure rig. <a href="#">Inspiration collected so far →</a></p>
+
+                      <hr>
+                      <p class="muted">Behind the scenes: <a href="#">Cases</a> · <a href="#">Walkthroughs</a> · <a href="#">References</a> · <a href="#">Vehicle Profile</a> · <a href="#">Plans</a></p>
+                    </article>
+                  </div>
+                </div>
+                <aside class="gh-about" data-gh-about></aside>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <p class="frame-label">↳ after tapping "Read Part 1": phases/recommission.md</p>
+            <div class="frame gh">
+              <div class="gh-body" style="grid-template-columns:minmax(0,1fr)">
+                <div class="gh-readme">
+                  <div class="tab">phases / recommission.md</div>
+                  <article class="md">
+                    <p><a href="#">← Betty</a></p>
+                    <h1>Part 1: Recommission</h1>
+                    <blockquote><p>Running and driving safely. In progress.</p></blockquote>
+
+                    <h3>Summer 2025: parked</h3>
+                    <p>Last day as a daily driver. The head gaskets were already due.</p>
+
+                    <h3>September 2026: a flat battery and fresh petrol</h3>
+                    <div class="ph tall" style="max-width:420px">photo: battery on the charger</div>
+                    <p>Moved once while parked, then found completely flat. Recharged, fresh petrol in. <a href="#">Build Log entry</a></p>
+
+                    <h3>September 2026: the key does nothing</h3>
+                    <p>No dash lights, no fuel pump prime, no crank. Jumping 12 V onto an ignition output wakes the dash, so the fault is at or before the ignition switch. <a href="#">Case: No start: key does nothing</a></p>
+
+                    <h3>September 2026: the contact block</h3>
+                    <div class="ph tall" style="max-width:420px">photo: contacts coated in yellowed grease</div>
+                    <p>Out, opened, cleaned. It still shorts the battery feed to its alloy housing at II and III, three reassemblies running. A new block is the sensible call. <a href="#">Build Log entry</a></p>
+
+                    <h3>What's next</h3>
+                    <ul>
+                      <li>New Lucas contact block</li>
+                      <li>Remake the battery positive lead</li>
+                      <li>Turn the engine by hand before the first crank</li>
+                    </ul>
+                    <p><a href="#">Part 2: Refresh →</a></p>
+                  </article>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== C: GitHub Pages site ===================== -->
+      <section data-variant="C" hidden>
+        <p class="frame-label">instant-coffee.github.io/Project-Betty · built by GitHub Pages from the Build Log files</p>
+        <div class="frame">
+          <div class="urlbar"><span class="dots"><i></i><i></i><i></i></span><span>instant-coffee.github.io/Project-Betty/</span></div>
+          <div class="site">
+            <nav class="s-nav">
+              <span class="s-word">Betty</span>
+              <ul>
+                <li><a href="#">Build Log</a></li>
+                <li><a href="#">Cases</a></li>
+                <li><a href="#">Walkthroughs</a></li>
+                <li><a href="#">About Betty</a></li>
+                <li><a href="#">GitHub ↗</a></li>
+              </ul>
+            </nav>
+            <div class="s-hero">
+              <div class="ph">photo: Betty, full width, trailside</div>
+              <div class="s-hero-text">
+                <div class="kick">1993 RANGE ROVER CLASSIC · LWB · 4.2 V8</div>
+                <h2>Ran when parked. Coming back.</h2>
+              </div>
+            </div>
+            <dl class="s-status" style="margin:0">
+              <div><dt>Phase</dt><dd>Recommission</dd></div>
+              <div><dt>Running</dt><dd>Not yet</dd></div>
+              <div><dt>Odometer</dt><dd>≈ 200,000 km</dd></div>
+              <div><dt>Last entry</dt><dd>16 Sep 2026</dd></div>
+            </dl>
+            <div class="s-main">
+              <div class="s-rail" aria-label="Phases">
+                <a href="#c-recommission" class="on">Recommission<small>Running and driving safely · in progress</small></a>
+                <a href="#c-refresh">Refresh<small>Cleanup, rust, seals</small></a>
+                <a href="#c-buildout">Build-out<small>Van-life / adventure rig</small></a>
+              </div>
+
+              <div class="s-filter" role="group" aria-label="Filter by Area">
+                <span class="lab">Area</span>
+                <button type="button" aria-pressed="true" data-area="all">All</button>
+                <button type="button" aria-pressed="false" data-area="electrical">electrical</button>
+                <button type="button" aria-pressed="false" data-area="fuel">fuel</button>
+                <button type="button" aria-pressed="false" data-area="engine">engine</button>
+              </div>
+
+              <section class="s-band" id="c-recommission">
+                <div class="s-band-head"><h3>Recommission</h3><span>Sept 2026 → · 4 entries · 1 open Case</span></div>
+                <div class="s-entries">
+                  <article class="s-entry case" data-areas="electrical">
+                    <div class="body">
+                      <span class="tag">Open Case</span>
+                      <h4>No start: key does nothing</h4>
+                      <p>The ignition contact block shorts to its housing at II and III. Replacement block next.</p>
+                    </div>
+                  </article>
+                  <article class="s-entry" data-areas="electrical">
+                    <div class="ph">photo: contacts in yellowed grease</div>
+                    <div class="body">
+                      <div class="meta"><span>2026-09</span><b>electrical</b></div>
+                      <h4>Contact block out, opened, cleaned</h4>
+                      <p>Still shorts after three reassemblies.</p>
+                    </div>
+                  </article>
+                  <article class="s-entry" data-areas="electrical">
+                    <div class="ph">photo: crimp corroded through</div>
+                    <div class="body">
+                      <div class="meta"><span>2026-09</span><b>electrical</b></div>
+                      <h4>Battery positive lead, rotten at the crimp</h4>
+                      <p>Strands black and splayed. Likely why the feed sagged under load.</p>
+                    </div>
+                  </article>
+                  <article class="s-entry" data-areas="electrical fuel">
+                    <div class="ph">photo: battery on the charger</div>
+                    <div class="body">
+                      <div class="meta"><span>2026-09</span><b>electrical</b><b>fuel</b></div>
+                      <h4>Flat battery charged, fresh petrol in</h4>
+                      <p>First visit after a year standing.</p>
+                    </div>
+                  </article>
+                  <article class="s-entry" data-areas="engine">
+                    <div class="ph">photo: parked, summer 2025</div>
+                    <div class="body">
+                      <div class="meta"><span>2025 summer</span><b>engine</b></div>
+                      <h4>Parked</h4>
+                      <p>Head gaskets due; last day as the daily driver.</p>
+                    </div>
+                  </article>
+                </div>
+                <p class="s-empty" data-empty hidden>No entries for this Area in Recommission yet.</p>
+              </section>
+
+              <section class="s-band quiet" id="c-refresh">
+                <div class="s-band-head"><h3>Refresh</h3><span>not started</span></div>
+                <p class="s-empty">Starts once she drives.</p>
+              </section>
+
+              <section class="s-band quiet" id="c-buildout">
+                <div class="s-band-head"><h3>Build-out</h3><span>not started</span></div>
+                <p class="s-empty">Nothing built yet. <a href="#">See the Inspiration collected so far →</a></p>
+              </section>
+            </div>
+            <footer class="s-foot">Every page here is built from the Markdown records in <a href="#">the GitHub repo</a>. The repo README points visitors here.</footer>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== D: Area × Phase board ===================== -->
+      <section data-variant="D" hidden>
+        <div class="stack">
+          <div>
+            <p class="frame-label">github.com/instant-coffee/Project-Betty · README.md is a board of Areas × Phases</p>
+            <div class="frame gh">
+              <div data-gh-top></div>
+              <div class="gh-body">
+                <div>
+                  <div data-gh-files></div>
+                  <div class="gh-readme">
+                    <div class="tab">README</div>
+                    <article class="md">
+                      <h1>Betty at a glance</h1>
+                      <p><strong>1993 Range Rover Classic LWB 4.2</strong> · Phase: <strong>Recommission</strong> · Running: no</p>
+                      <div class="ph hero" style="aspect-ratio:16/5">photo: Betty, side on</div>
+                      <p class="muted">Each cell links to that Area's page. <span class="status done">Done</span> · <span class="status doing">Doing</span> · <span class="status plan">Planned</span> · <span class="status none">—</span> nothing yet</p>
+                      <div class="tblwrap"><table class="board">
+                        <thead><tr><th>Area</th><th>Recommission</th><th>Refresh</th><th>Build-out</th></tr></thead>
+                        <tbody>
+                          <tr><td><a href="#d-electrical">electrical</a></td><td><span class="status doing">Doing</span><br><sub>1 open Case · 3 entries</sub></td><td><span class="status none">—</span></td><td><span class="status none">—</span></td></tr>
+                          <tr><td><a href="#">fuel</a></td><td><span class="status doing">Doing</span><br><sub>1 entry</sub></td><td><span class="status none">—</span></td><td><span class="status none">—</span></td></tr>
+                          <tr><td><a href="#">engine</a></td><td><span class="status plan">Planned</span><br><sub>head gaskets · turn by hand</sub></td><td><span class="status none">—</span></td><td><span class="status none">—</span></td></tr>
+                          <tr><td><a href="#">cooling</a></td><td><span class="status none">—</span></td><td><span class="status none">—</span></td><td><span class="status none">—</span></td></tr>
+                          <tr><td><a href="#">body</a></td><td><span class="status none">—</span></td><td><span class="status none">—</span></td><td><span class="status none">—</span></td></tr>
+                          <tr><td><a href="#">sleeping</a></td><td><span class="status none">—</span></td><td><span class="status none">—</span></td><td><span class="status none">—</span><br><sub>Inspiration only</sub></td></tr>
+                          <tr><td><a href="#">power</a></td><td><span class="status none">—</span></td><td><span class="status none">—</span></td><td><span class="status none">—</span><br><sub>Inspiration only</sub></td></tr>
+                        </tbody>
+                      </table></div>
+                      <p class="muted">Area list is a stand-in until "What is the Area list?" is settled.</p>
+                      <h2>Latest</h2>
+                      <p>2026-09-16 · <a href="#">Opened the no-start Case</a> <sub>electrical</sub></p>
+                    </article>
+                  </div>
+                </div>
+                <aside class="gh-about" data-gh-about></aside>
+              </div>
+            </div>
+          </div>
+
+          <div id="d-electrical">
+            <p class="frame-label">↳ after tapping "electrical": areas/electrical.md</p>
+            <div class="frame gh">
+              <div class="gh-body" style="grid-template-columns:minmax(0,1fr)">
+                <div class="gh-readme">
+                  <div class="tab">areas / electrical.md</div>
+                  <article class="md">
+                    <p><a href="#">← Betty at a glance</a></p>
+                    <h1>electrical</h1>
+                    <p class="muted">Everything in the WorkBook tagged electrical, by Phase.</p>
+                    <h2>Recommission</h2>
+                    <p><strong>Cases</strong></p>
+                    <ul><li><a href="#">No start: key does nothing</a> <sub>open</sub></li></ul>
+                    <p><strong>Build Log</strong></p>
+                    <ul>
+                      <li>2026-09-16 · <a href="#">Opened the no-start Case</a></li>
+                      <li>2026-09 · <a href="#">Contact block out, opened, cleaned</a></li>
+                      <li>2026-09 · <a href="#">Battery positive lead corroded through at the crimp</a></li>
+                    </ul>
+                    <p><strong>Plans</strong></p>
+                    <ul>
+                      <li><a href="#">Replace the Lucas ignition contact block</a></li>
+                      <li><a href="#">Remake the battery positive lead</a></li>
+                    </ul>
+                    <p><strong>Walkthroughs</strong></p>
+                    <ul><li class="muted">None yet</li></ul>
+                    <h2>Refresh</h2>
+                    <p class="muted">Nothing yet.</p>
+                    <h2>Build-out</h2>
+                    <p class="muted">Nothing yet.</p>
+                  </article>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="notes" aria-live="polite">
+      <div class="eyebrow" id="n-key">Variant A</div>
+      <h2 id="n-name"></h2>
+      <dl>
+        <div><dt>Lives at</dt><dd id="n-where"></dd></div>
+        <div><dt>A visitor sees first</dt><dd id="n-first"></dd></div>
+        <div><dt>How Phases organise it</dt><dd id="n-phase"></dd></div>
+        <div><dt>What keeps it current</dt><dd id="n-upkeep"></dd></div>
+        <div><dt>Suits</dt><dd id="n-suits"></dd></div>
+        <div><dt>Weak spot</dt><dd id="n-weak"></dd></div>
+      </dl>
+      <p class="ask">React with "A's this, C's that". Mixing is expected.</p>
+    </aside>
+  </div>
+</div>
+
+<div class="switcher" role="toolbar" aria-label="Prototype variant switcher">
+  <button type="button" id="prev" aria-label="Previous variant">←</button>
+  <span class="lbl" id="sw-label"></span>
+  <button type="button" id="next" aria-label="Next variant">→</button>
+</div>
+
+<script>
+const VARIANTS = [
+  { key:'A', name:'README dashboard',
+    where:'The repo home on github.com. README.md is the whole showcase.',
+    first:'Repo name and About blurb, a short list of top-level folders, then a photo, the Phase table and the latest Build Log entries.',
+    phase:'A three-row Phase table shows progress; every entry carries its Phase in a column.',
+    upkeep:'The "Latest", "Open Cases" and "Up next" blocks go stale unless something rewrites them after each entry: an agent step in the Build Log skill, or a GitHub Action writing between markers.',
+    suits:'Friends checking back: "what\'s new with Betty?"',
+    weak:'A first-time visitor gets a status report, not a story.' },
+  { key:'B', name:'README as a book',
+    where:'The repo home, plus one Markdown chapter page per Phase.',
+    first:'A photo and a short "who is Betty" intro, then three Parts in Phase order, each with a status, a photo and a paragraph.',
+    phase:'Phases are the chapters. Each chapter page runs in date order and links out to the Build Log entries and Cases.',
+    upkeep:'Hand-written: a line on the chapter page per notable entry, and the Part summary rewritten at milestones. Less often than A, but it\'s prose.',
+    suits:'First-time enthusiasts reading from the start, like a forum build thread.',
+    weak:'What\'s new is buried at the bottom of the current Part.' },
+  { key:'C', name:'GitHub Pages site',
+    where:'instant-coffee.github.io/Project-Betty, built by Pages (Jekyll) from the Build Log files. The README just points there.',
+    first:'A full-width photo and a status strip, then a photo timeline banded by Phase, filterable by Area.',
+    phase:'A Phase rail up top; the timeline is grouped into Phase bands, newest first.',
+    upkeep:'Front matter on every Build Log entry (date, Phase, Areas, cover photo) plus one-time Pages setup. The site rebuilds itself on every push.',
+    suits:'Photo-led browsing on a phone, and sharing one link.',
+    weak:'A website is the thing the map ruled out of scope ("Public presence beyond GitHub"). Also sets a hard requirement on the templates.' },
+  { key:'D', name:'Area × Phase board',
+    where:'The repo home, plus one Markdown page per Area.',
+    first:'An at-a-glance board: Areas down the side, Phases across, a status in each cell.',
+    phase:'Phases are columns; the current one fills in first.',
+    upkeep:'Every cell is derived from Area and Phase tags across all records, so it really needs generating (agent or Action). Hand-kept, it rots fast.',
+    suits:'Enthusiasts who ask "what\'s been done to the electrics?"',
+    weak:'Almost empty early on, and no sense of story. Leans on the Area list, which isn\'t decided yet.' },
+];
+
+/* shared GitHub chrome */
+const GH_TOP = `<div class="gh-top"><span class="repo">instant-coffee / <b>Project-Betty</b></span><span class="gh-pill">Public</span></div>`;
+const GH_FILES = `<div class="gh-files" aria-label="Top-level files (provisional names)">
+  <div class="commit">instant-coffee · build-log: Opened the no-start Case · 2026-09-16</div>
+  ${['.claude','build-log','cases','inspiration','references','walkthroughs'].map(f=>`<div class="row"><span class="ico">▸</span><a href="#">${f}</a></div>`).join('')}
+  ${['CONTEXT.md','README.md','vehicle-profile.md'].map(f=>`<div class="row"><span class="ico">·</span><a href="#">${f}</a></div>`).join('')}
+</div>`;
+const GH_ABOUT = `<h3>About</h3><p>Restomod of Betty, a 1993 Range Rover Classic LWB 4.2: from ran-when-parked to adventure rig.</p>
+  <div class="gh-topics"><span>range-rover-classic</span><span>restomod</span><span>overland</span><span>van-life</span></div>`;
+document.querySelectorAll('[data-gh-top]').forEach(el=>el.outerHTML=GH_TOP);
+document.querySelectorAll('[data-gh-files]').forEach(el=>el.outerHTML=GH_FILES);
+document.querySelectorAll('[data-gh-about]').forEach(el=>el.innerHTML=GH_ABOUT);
+
+/* switcher */
+let idx = 0;
+function readInitial(){
+  try{
+    const p = new URLSearchParams(location.search).get('variant') || (location.hash.match(/variant=([A-D])/i)||[])[1];
+    const i = VARIANTS.findIndex(v=>v.key===String(p||'').toUpperCase());
+    if(i>=0) return i;
+  }catch(e){}
+  return 0;
+}
+function show(i, push){
+  idx = (i + VARIANTS.length) % VARIANTS.length;
+  const v = VARIANTS[idx];
+  document.querySelectorAll('[data-variant]').forEach(s=>s.hidden = s.dataset.variant!==v.key);
+  document.getElementById('sw-label').innerHTML = `<b>${v.key}</b> ${v.name}<small>${idx+1}/${VARIANTS.length}</small>`;
+  document.getElementById('n-key').textContent = `Variant ${v.key}`;
+  document.getElementById('n-name').textContent = v.name;
+  for (const k of ['where','first','phase','upkeep','suits','weak']) document.getElementById('n-'+k).textContent = v[k];
+  if(push){
+    try{ const u = new URL(location.href); u.searchParams.set('variant', v.key); history.replaceState(null,'',u); }catch(e){}
+    window.scrollTo({top:0});
+  }
+}
+document.getElementById('prev').onclick = ()=>show(idx-1,true);
+document.getElementById('next').onclick = ()=>show(idx+1,true);
+document.addEventListener('keydown', e=>{
+  const t = e.target;
+  if(t && (t.closest('input,textarea,select,[contenteditable]'))) return;
+  if(e.key==='ArrowLeft') show(idx-1,true);
+  if(e.key==='ArrowRight') show(idx+1,true);
+});
+show(readInitial(), false);
+
+/* variant C: Area filter */
+document.querySelectorAll('.s-filter button').forEach(b=>b.addEventListener('click',()=>{
+  const area = b.dataset.area;
+  document.querySelectorAll('.s-filter button').forEach(x=>x.setAttribute('aria-pressed', String(x===b)));
+  let shown = 0;
+  document.querySelectorAll('#c-recommission .s-entry').forEach(en=>{
+    const ok = area==='all' || en.dataset.areas.split(' ').includes(area);
+    en.hidden = !ok; if(ok) shown++;
+  });
+  document.querySelector('#c-recommission [data-empty]').hidden = shown>0;
+}));
+</script>
