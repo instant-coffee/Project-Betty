@@ -3,3 +3,6 @@
 
 # Claude Code agent worktrees
 .claude/worktrees/
+
+# Untracked Project Files
+docs/projectContext/*
