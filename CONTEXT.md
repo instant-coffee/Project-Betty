@@ -49,7 +49,7 @@ A step-by-step procedure authored for Betty specifically, distilled from Referen
 _Avoid_: guide, how-to, procedure
 
 **Area**:
-One entry in the single shared list of vehicle systems and build-out zones (e.g. electrical, cooling, sleeping, power) that organises every record in the WorkBook.
+One entry in the single, flat list of vehicle systems and build-out zones (e.g. electrical, cooling, sleeping, power) that organises the WorkBook's records. A record carries one or more Areas, or none if it concerns the whole vehicle; the first listed is its **primary Area**.
 _Avoid_: category, system, section
 
 **Inspiration**:
