@@ -21,8 +21,12 @@ _Avoid_: stage, milestone, step
 ### The hub
 
 **WorkBook**:
-The hub as a whole: every record, reference, and showcase about Betty kept in this repo.
+The hub as a whole: every record, Reference, and Showcase about Betty kept in this repo.
 _Avoid_: wiki, notes, project docs
+
+**Showcase**:
+The public face of the WorkBook: the repo's front page and the Phase pages behind it, written for friends and enthusiasts rather than for working on Betty.
+_Avoid_: website, blog, portfolio
 
 **Build Log**:
 A dated record of work actually done to Betty.
